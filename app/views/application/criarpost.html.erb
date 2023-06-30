@@ -451,67 +451,6 @@ section.active .modal-box {
   margin: 0 10px;
 }
 
-.comment-button {
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 1;
-  margin-left: 10px;
-}
-
-.comment-button i {
-  font-size: 20px;
-  color: #000;
-}
-
-.comment-button i:hover {
-  color: #ff0000; /* Altere a cor do ícone ao passar o mouse */
-}
-
-.comment-input {
-  opacity: 0;
-  max-height: 0;
-  transition: opacity 0.3s, max-height 0.3s;
-}
-
-.comment-input.open {
-  opacity: 1;
-  max-height: 100px; /* Defina a altura máxima desejada para o input */
-}
-
-/* esconde a pop-up por padrão */
-.comment-popup {
-  display: none;
-}
-
-/* posiciona a pop-up no centro da tela */
-.comment-popup__content {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 300px;
-  height: 200px;
-  background-color: white;
-  border: 1px solid black;
-  padding: 10px;
-}
-
-/* estiliza o formulário e os botões */
-#comment-form {
-  display: flex;
-  flex-direction: column;
-}
-
-#comment-text {
-  width: 100%;
-}
-
-button {
-  margin-top: 10px;
-}
-
-
 	</style>
     <body>
 
@@ -523,10 +462,10 @@ button {
                 <div class="nav__menu" id="nav-menu">
                     <ul class="nav__list">
                         <li class="nav__item">
-                            <a href="#home" class="nav__link active-link">
-                                <i class='bx bx-home-alt nav__icon'></i>
-                                <span class="nav__name">Inicio</span>
-                            </a>
+                  <a href="<%= application_path %>" class="nav__link">
+                      <i class='bx bx-user nav__icon'></i>
+                      <span class="nav__name">Inicio</span>
+                  </a>
                         </li>
 
                   <a href="<%= perfil_path %>" class="nav__link">
@@ -536,9 +475,9 @@ button {
 
 
                         <li class="nav__item">
-                            <a href="<%= criarpost_path %>" class="nav__link">
-                                <i class='bx bx-user nav__icon'></i>
-                                <span class="nav__name">Criar um Post</span>
+                            <a href="#skills" class="nav__link">
+                                <i class='bx bx-book-alt nav__icon'></i>
+                                <span class="nav__name">Meus Posts</span>
                             </a>
                         </li>
 
@@ -563,139 +502,31 @@ button {
         </header>
 
         <main>
-            <!--=============== Inicio ===============-->
-<section class="container section section__height" id="home">
-  <h2 class="section__title">Publicações</h2>
-
-  <% @user_posts.each do |post| %>
-    <div class="square-card">
-      <div class="square-card__content">
-        <p class="square-card__text"><%= post.descricao_post %></p>
-        <button id="<%= post.id %>" onclick="likePost(this)"> <!-- usa o id do post como o id do botão -->
-          <i class="fa fa-heart"></i>
-          <span>0</span> <!-- inicia o número de likes com zero -->
-        </button>
-        <!-- adiciona um botão com um ícone de comentário -->
-        <button onclick="showCommentPopup(this)" data-post-id="<%= post.id %>"> <!-- usa o atributo data-post-id para guardar o id do post -->
-          <i class="fa fa-comment"></i>
-        </button>
-      </div>
-    </div>
-  <% end %>
 
 
-</section>
-
-<!-- cria uma pop-up para comentar na publicação -->
-<div id="comment-popup" class="comment-popup">
-  <div class="comment-popup__content">
-    <h3>Comentar na publicação</h3>
-    <form id="comment-form" action="/comments" method="post">
-      <!-- usa um input hidden para enviar o id do post -->
-      <input type="hidden" id="post-id" name="post_id" value="">
-      <!-- usa um input text para digitar o comentário -->
-      <input type="text" id="comment-text" name="comment_text" placeholder="Digite seu comentário aqui">
-      <!-- usa um botão submit para enviar o comentário -->
-      <button type="submit">Enviar</button>
-    </form>
-    <!-- usa um botão para fechar a pop-up -->
-    <button onclick="closeCommentPopup()">Fechar</button>
-  </div>
-</div>
+          <!--=============== Meus Posts ===============-->
+          <section class="container section section__height" id="skills">
+            <h2 class="section__title">Meus Posts</h2>
+            <div class="square-card">
+                <div class="square-card__content">
+                <form action="/user_posts" method="POST">
+                    <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+                    <div class="input-wrapper">
+                    <textarea name="descricao_post" placeholder="Digite seu texto"></textarea>
+                    </div>
+                    <button class="send-button"><i class="fa fa-paper-plane"></i> Enviar</button>
+                </form>
+                </div>
+            </div>
+            </section>
 
 
 
+        <script>
 
 
 
-
-
-        </main>
-
-
-<script>
-      // Coloca o código JavaScript que usa o localStorage aqui
-      // Por exemplo:
-
-      // Define a função likePost que recebe um botão como argumento
-      function likePost(button) {
-        var span = button.querySelector("span"); // encontra o span dentro do botão
-        var likes = parseInt(span.textContent); // obtém o número de likes do span como um inteiro
-        likes++; // incrementa o número de likes
-        span.textContent = likes; // atualiza o texto do span com o novo número de likes
-        localStorage.setItem(button.id, likes); // salva o número de likes no localStorage, usando o id do botão como chave
-      }
-
-      // Obtém todos os botões de like da página
-      var buttons = document.querySelectorAll("button");
-
-      // Itera sobre os botões e verifica se eles têm algum dado salvo no localStorage
-      buttons.forEach(function(button) {
-        var likes = localStorage.getItem(button.id); // obtém o número de likes do localStorage, usando o id do botão como chave
-        if (likes) { // se houver algum dado salvo
-          button.querySelector("span").textContent = likes; // atualiza o texto do span com o número de likes salvo
-        }
-      });
-
-       // seleciona a pop-up e o formulário
-   // seleciona a pop-up e o formulário
-  var commentPopup = document.getElementById("comment-popup");
-  var commentForm = document.getElementById("comment-form");
-
-  // define uma função para mostrar a pop-up
-  function showCommentPopup(button) {
-    // obtém o id do post a partir do atributo data-post-id do botão
-    var postId = button.getAttribute("data-post-id");
-    // atribui o id do post ao input hidden do formulário
-    document.getElementById("post-id").value = postId;
-    // mostra a pop-up
-    commentPopup.style.display = "block";
-  }
-
-  // define uma função para fechar a pop-up
-  function closeCommentPopup() {
-    // esconde a pop-up
-    commentPopup.style.display = "none";
-  }
-
-  // adiciona um evento de submit ao formulário
-  commentForm.addEventListener("submit", function(event) {
-    // previne o comportamento padrão do formulário
-    event.preventDefault();
-    // obtém os valores dos inputs do formulário
-    var postId = document.getElementById("post-id").value;
-    var commentText = document.getElementById("comment-text").value;
-    // verifica se o comentário não está vazio
-    if (commentText) {
-      // envia uma requisição AJAX para criar o comentário
-      $.ajax({
-        url: "/comments",
-        method: "post",
-        data: {post_id: postId, comment_text: commentText},
-        success: function(response) {
-          // verifica se a resposta é positiva
-          if (response.status == "success") {
-            // mostra uma mensagem de sucesso
-            alert("Comentário criado com sucesso!");
-            // fecha a pop-up
-            closeCommentPopup();
-          } else {
-            // mostra uma mensagem de erro
-            alert("Ocorreu um erro ao criar o comentário.");
-          }
-        },
-        error: function(error) {
-          // mostra uma mensagem de erro
-          alert("Ocorreu um erro ao criar o comentário.");
-        }
-      });
-    } else {
-      // mostra uma mensagem de aviso
-      alert("Por favor, digite um comentário.");
-    }
-  });
-    </script>
-
+        </script>
 
 
     </body>
